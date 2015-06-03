@@ -6,7 +6,7 @@ import (
 	"net/rpc"
 
 	"github.com/samuel/go-metrics/metrics"
-	"github.com/samuel/go-rpcext"
+	"github.com/michaelnugent/go-rpcext"
 	"github.com/samuel/go-thrift/thrift"
 )
 
