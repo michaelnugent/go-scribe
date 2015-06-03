@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/samuel/go-thrift"
+	"github.com/samuel/go-thrift/thrift"
 )
 
 type ResultCode int32
@@ -48,68 +48,68 @@ func (e *LogEntry) String() string {
 	return fmt.Sprintf("%+v", *e)
 }
 
-func (e *LogEntry) EncodeThrift(w io.Writer, p thrift.Protocol) error {
-	if err := p.WriteStructBegin(w, "logEntry"); err != nil {
+func (e *LogEntry) EncodeThrift(w io.Writer, p thrift.ProtocolWriter) error {
+	if err := p.WriteStructBegin("logEntry"); err != nil {
 		return err
 	}
-	if err := p.WriteFieldBegin(w, "category", thrift.TypeString, 1); err != nil {
+	if err := p.WriteFieldBegin("category", thrift.TypeString, 1); err != nil {
 		return err
 	}
-	if err := p.WriteString(w, e.Category); err != nil {
+	if err := p.WriteString(e.Category); err != nil {
 		return err
 	}
-	if err := p.WriteFieldEnd(w); err != nil {
+	if err := p.WriteFieldEnd(); err != nil {
 		return err
 	}
-	if err := p.WriteFieldBegin(w, "message", thrift.TypeString, 2); err != nil {
+	if err := p.WriteFieldBegin("message", thrift.TypeString, 2); err != nil {
 		return err
 	}
-	if err := p.WriteBytes(w, e.Message); err != nil {
+	if err := p.WriteBytes(e.Message); err != nil {
 		return err
 	}
-	if err := p.WriteFieldEnd(w); err != nil {
+	if err := p.WriteFieldEnd(); err != nil {
 		return err
 	}
-	if err := p.WriteFieldStop(w); err != nil {
+	if err := p.WriteFieldStop(); err != nil {
 		return err
 	}
-	return p.WriteStructEnd(w)
+	return p.WriteStructEnd()
 }
 
 // ScribeLogRequest
 
-func (req *ScribeLogRequest) EncodeThrift(w io.Writer, p thrift.Protocol) error {
-	if err := p.WriteStructBegin(w, ""); err != nil {
+func (req *ScribeLogRequest) EncodeThrift(w io.Writer, p thrift.ProtocolWriter) error {
+	if err := p.WriteStructBegin(""); err != nil {
 		return err
 	}
-	if err := p.WriteFieldBegin(w, "", thrift.TypeList, 1); err != nil {
+	if err := p.WriteFieldBegin("", thrift.TypeList, 1); err != nil {
 		return err
 	}
-	if err := p.WriteListBegin(w, thrift.TypeStruct, len(req.Messages)); err != nil {
+	if err := p.WriteListBegin(thrift.TypeStruct, len(req.Messages)); err != nil {
 		return err
 	}
 	for _, e := range req.Messages {
 		e.EncodeThrift(w, p)
 	}
-	if err := p.WriteListEnd(w); err != nil {
+	if err := p.WriteListEnd(); err != nil {
 		return err
 	}
-	if err := p.WriteFieldEnd(w); err != nil {
+	if err := p.WriteFieldEnd(); err != nil {
 		return err
 	}
-	if err := p.WriteFieldStop(w); err != nil {
+	if err := p.WriteFieldStop(); err != nil {
 		return err
 	}
-	return p.WriteStructEnd(w)
+	return p.WriteStructEnd()
 }
 
 // ScribeLogResponse
 
-func (res *ScribeLogResponse) DecodeThrift(r io.Reader, p thrift.Protocol) error {
-	if err := p.ReadStructBegin(r); err != nil {
+func (res *ScribeLogResponse) DecodeThrift(r io.Reader, p thrift.ProtocolReader) error {
+	if err := p.ReadStructBegin(); err != nil {
 		return err
 	}
-	ftype, fid, err := p.ReadFieldBegin(r)
+	ftype, fid, err := p.ReadFieldBegin()
 	if err != nil {
 		return err
 	}
@@ -119,20 +119,20 @@ func (res *ScribeLogResponse) DecodeThrift(r io.Reader, p thrift.Protocol) error
 	if fid != 0 {
 		return errors.New("Unknown field id")
 	}
-	val, err := p.ReadI32(r)
+	val, err := p.ReadI32()
 	if err != nil {
 		return err
 	}
 	res.Result = ResultCode(val)
-	if err := p.ReadFieldEnd(r); err != nil {
+	if err := p.ReadFieldEnd(); err != nil {
 		return err
 	}
-	ftype, _, err = p.ReadFieldBegin(r)
+	ftype, _, err = p.ReadFieldBegin()
 	if err != nil {
 		return err
 	}
 	if ftype != thrift.TypeStop {
 		return errors.New("Invalid type")
 	}
-	return p.ReadStructEnd(r)
+	return p.ReadStructEnd()
 }

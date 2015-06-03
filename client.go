@@ -7,7 +7,7 @@ import (
 
 	"github.com/samuel/go-metrics/metrics"
 	"github.com/samuel/go-rpcext"
-	"github.com/samuel/go-thrift"
+	"github.com/samuel/go-thrift/thrift"
 )
 
 var (
@@ -37,7 +37,7 @@ func NewScribeClient(network string, addr string, maxConnections int) (*ScribeCl
 }
 
 func (s *ScribeClient) NewClient() (*rpc.Client, error) {
-	return thrift.Dial(s.network, s.addr, true, thrift.NewBinaryProtocol(true, false, 128))
+	return thrift.Dial(s.network, s.addr, true, thrift.BinaryProtocol, false)
 }
 
 func (s *ScribeClient) Log(entries []*LogEntry) (ResultCode, error) {
